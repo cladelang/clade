@@ -7,7 +7,7 @@ pub fn try_create_folder(path: &PathBuf) {
             if e.kind() == std::io::ErrorKind::AlreadyExists {
                 println!("Folder already exists.");
             }
-            exit_err();
+            exit_ok();
         }
     }
 }
@@ -19,16 +19,12 @@ pub fn try_create_file(path: &PathBuf) {
             if e.kind() == std::io::ErrorKind::AlreadyExists {
                 println!("File already exists.");
             }
-            exit_err();
+            exit_ok();
             return;
         }
     };
 }
 
-pub fn _exit_ok() {
+pub fn exit_ok() {
     std::process::exit(0);
-}
-
-pub fn exit_err() {
-    std::process::exit(1);
 }

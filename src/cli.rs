@@ -1,6 +1,6 @@
 use std::{env, path::PathBuf, io::Write};
 use clap::{Parser, Subcommand};
-use crate::util::{try_create_folder, try_create_file};
+use crate::util;
 
 #[derive(Parser)]
 struct Args {
@@ -28,7 +28,7 @@ pub fn run() {
                 Err(e) => {
                     if e.kind() == std::io::ErrorKind::AlreadyExists {
                         println!("Project folder already exists.");
-                        return;
+                        util::exit_ok();
                     }
                     return;
                 }
@@ -41,11 +41,11 @@ pub fn run() {
 
 pub fn create_files(project_path: &PathBuf) {
     let src_path = project_path.join("src");
-    try_create_folder(&src_path);
+    util::try_create_folder(&src_path);
     let main_path = project_path.join("src").join("Main.xml");
-    try_create_file(&main_path);
+    util::try_create_file(&main_path);
     let bin_path = project_path.join("bin");
-    try_create_folder(&bin_path);
+    util::try_create_folder(&bin_path);
 
     let mut main_file = std::fs::File::create(&main_path).unwrap();
     write!(main_file, "<Main>\n").unwrap();
