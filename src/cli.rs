@@ -1,6 +1,6 @@
-use std::{env, path::PathBuf, io::Write};
+use std::{path::PathBuf, io::Write};
 use clap::{Parser, Subcommand};
-use crate::util;
+use crate::{util, project::Project, parser};
 
 #[derive(Parser)]
 struct Args {
@@ -10,7 +10,8 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Action {
-    New(NewAction)
+    New(NewAction),
+    Start
 }
 
 #[derive(Parser)]
@@ -22,7 +23,7 @@ pub fn run() {
     let args = Args::parse();
     match args.action {
         Action::New(NewAction { project_name }) => {
-            let project_path = env::current_dir().unwrap().join(project_name);
+            let project_path = util::current_dir().join(&project_name);
             match std::fs::create_dir(&project_path) {
                 Ok(x) => x,
                 Err(e) => {
@@ -34,18 +35,33 @@ pub fn run() {
                 }
             };
 
-            create_files(&project_path);
+            create_files(Project::new(project_name.to_string()), &project_path);
+        },
+        Action::Start => {
+            if util::in_project() {
+                parser::run();
+            } else {
+                println!("Not in a project.");
+                util::exit_ok();
+            }
         }
     }
 }
 
-pub fn create_files(project_path: &PathBuf) {
+pub fn create_files(project: Project, project_path: &PathBuf) {
     let src_path = project_path.join("src");
     util::try_create_folder(&src_path);
     let main_path = project_path.join("src").join("Main.xml");
     util::try_create_file(&main_path);
     let bin_path = project_path.join("bin");
     util::try_create_folder(&bin_path);
+    let clade_toml_path = project_path.join("Clade.toml");
+    util::try_create_file(&clade_toml_path);
+
+    let mut clade_toml = std::fs::File::create(&clade_toml_path).unwrap();
+    writeln!(clade_toml, "[project]").unwrap();
+    writeln!(clade_toml, "name = \"{}\"", project.name).unwrap();
+    write!(clade_toml, "entry_point = \"Main.xml\"").unwrap();
 
     let mut main_file = std::fs::File::create(&main_path).unwrap();
     write!(main_file, "<Main>\n").unwrap();

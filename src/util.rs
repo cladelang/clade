@@ -28,3 +28,12 @@ pub fn try_create_file(path: &PathBuf) {
 pub fn exit_ok() {
     std::process::exit(0);
 }
+
+pub fn in_project() -> bool {
+    let clade_toml = current_dir().join("Clade.toml");
+    clade_toml.exists()
+}
+
+pub fn current_dir() -> PathBuf {
+    std::env::current_dir().unwrap()
+}
