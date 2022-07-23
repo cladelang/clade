@@ -2,13 +2,15 @@ use crate::{config::Config, util};
 use std::io::Write;
 
 pub struct Compiler {
-    pub lines: Vec<String>
+    pub lines: Vec<String>,
+    pub release: bool,
 }
 
 impl Compiler {
-    pub fn new() -> Self {
+    pub fn new(release: bool) -> Self {
         Compiler {
-            lines: Vec::new()
+            lines: Vec::new(),
+            release,
         }
     }
 
@@ -24,8 +26,8 @@ impl Compiler {
         self.push_with_x_indent(line, 1);
     }
 
-    pub fn compile(&mut self, conf: &Config) {
-        let rustcode_path = util::current_dir().join("bin").join(format!("{}.rs", conf.project.name));
+    pub fn compile(&mut self, config: &Config) {
+        let rustcode_path = util::current_dir().join("bin").join(format!("{}.rs", config.project.name));
         let mut rustcode_file = std::fs::File::create(&rustcode_path).unwrap();
         for line in self.lines.iter() {
             rustcode_file.write_all(line.as_bytes()).unwrap();
@@ -39,9 +41,11 @@ impl Compiler {
         let mut rustc = std::process::Command::new("rustc");
         rustc.arg("--crate-type").arg("bin");
         rustc.arg("--out-dir").arg(main_dir.to_str().unwrap());
-        rustc.arg("-Cdebuginfo=0");
-        rustc.arg("-Copt-level=3");
-        rustc.arg("-Clink-arg=/DEBUG:NONE");
+        if self.release {
+            rustc.arg("-Cdebuginfo=0");
+            rustc.arg("-Copt-level=3");
+            rustc.arg("-Clink-arg=/DEBUG:NONE");
+        }
         rustc.arg(rustcode_path.to_str().unwrap());
         rustc.spawn().unwrap();
     }

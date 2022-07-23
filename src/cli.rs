@@ -5,18 +5,24 @@ use crate::{util, project::Project, parser};
 #[derive(Parser)]
 struct Args {
     #[clap(subcommand)]
-    action: Action
+    action: Action,
 }
 
 #[derive(Subcommand)]
 enum Action {
     New(NewAction),
-    Start
+    Start(StartAction),
 }
 
 #[derive(Parser)]
 struct NewAction {
     project_name: String,
+}
+
+#[derive(Parser)]
+struct StartAction {
+    #[clap(long, short)]
+    release: bool,
 }
 
 pub fn run() {
@@ -37,9 +43,9 @@ pub fn run() {
 
             create_files(Project::new(project_name.to_string()), &project_path);
         },
-        Action::Start => {
+        Action::Start(StartAction { release }) => {
             if util::in_project() {
-                parser::run();
+                parser::run(release);
             } else {
                 println!("Not in a project.");
                 util::exit_ok();
