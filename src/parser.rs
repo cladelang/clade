@@ -7,7 +7,7 @@ pub fn run(release: bool) {
     let mut compiler = Compiler::new(release);
     
     let input = std::fs::read_to_string(util::current_dir().join("src").join(&config.project.entry_point)).unwrap();
-    
+
     let doc = Document::parse(&input).unwrap();
     let main_method = match doc.descendants().find(|e| e.tag_name().name() == "Main") {
         Some(e) => e,
@@ -25,6 +25,6 @@ pub fn run(release: bool) {
     compiler.push_line_str("}");
     compiler.compile(&config);
     
-    let exe = util::current_dir().join("bin").join(format!("{}.exe", config.project.name));
-    std::process::Command::new(exe.to_str().unwrap()).spawn().unwrap();
+    let exe_path = util::current_dir().join("bin").join(format!("{}.exe", config.project.name));
+    std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap();
 }
