@@ -28,8 +28,8 @@ pub fn run() {
                 Err(e) => {
                     if e.kind() == std::io::ErrorKind::AlreadyExists {
                         println!("Project folder already exists.");
-                        util::exit_ok();
                     }
+                    util::exit_ok();
                     return;
                 }
             };
