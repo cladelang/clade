@@ -1,5 +1,5 @@
 use std::{env, path::PathBuf, io::Write};
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use crate::util::{try_create_folder, try_create_file};
 
 #[derive(Parser)]
@@ -8,7 +8,7 @@ struct Args {
     action: Action
 }
 
-#[derive(clap::Subcommand)]
+#[derive(Subcommand)]
 enum Action {
     New(NewAction)
 }
@@ -44,10 +44,11 @@ pub fn create_files(project_path: &PathBuf) {
     try_create_folder(&src_path);
     let main_path = project_path.join("src").join("Main.xml");
     try_create_file(&main_path);
-    let target_path = project_path.join("target");
-    try_create_folder(&target_path);
+    let bin_path = project_path.join("bin");
+    try_create_folder(&bin_path);
 
-    // write to src/Main.xml
     let mut main_file = std::fs::File::create(&main_path).unwrap();
-    main_file.write_all(b"<Main>\n    <Println>Hello, world!</Println>\n</Main>").unwrap();
+    write!(main_file, "<Main>\n").unwrap();
+    write!(main_file, "    <Println>Hello, world!</Println>\n").unwrap();
+    write!(main_file, "</Main>").unwrap();
 }
