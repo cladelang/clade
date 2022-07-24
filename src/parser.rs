@@ -1,7 +1,4 @@
-use crate::config::Config;
-use crate::util;
-use crate::code_node::CodeNode;
-use crate::compiler::Compiler;
+use crate::{config::Config, util, code_node::CodeNode, compiler::Compiler};
 
 use roxmltree::Document;
 use std::process::Command;
