@@ -47,7 +47,7 @@ pub fn run() {
             if util::in_project() {
                 parser::run(release);
             } else {
-                println!("Not in a project.");
+                println!("This action can only be ran in the root of a project folder.");
                 util::exit_ok();
             }
         }
