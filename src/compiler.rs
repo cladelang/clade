@@ -36,10 +36,10 @@ impl Compiler {
             }
         }
 
-        let main_dir = rustcode_path.parent().unwrap();
+        let bin_dir = rustcode_path.parent().unwrap();
         
         let mut rustc = std::process::Command::new("rustc");
-        rustc.arg("--out-dir").arg(main_dir.to_str().unwrap());
+        rustc.arg("--out-dir").arg(bin_dir.to_str().unwrap());
         if self.release {
             rustc.arg("-O");
             rustc.arg("-Cdebuginfo=0");
