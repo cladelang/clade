@@ -1,9 +1,11 @@
-use crate::{config, util, code_node};
+use crate::config::Config;
+use crate::util;
+use crate::code_node::CodeNode;
 use crate::compiler::Compiler;
 use roxmltree::Document;
 
 pub fn run(release: bool) {
-    let config: config::Config = toml::from_str(&std::fs::read_to_string("Clade.toml").unwrap()).unwrap();
+    let config: Config = toml::from_str(&std::fs::read_to_string("Clade.toml").unwrap()).unwrap();
     let mut compiler = Compiler::new(release);
     
     let input = std::fs::read_to_string(util::current_dir().join("src").join(&config.project.entry_point)).unwrap();
@@ -14,11 +16,18 @@ pub fn run(release: bool) {
         None => panic!("No Main method found"),
     };
     compiler.push_line_str("fn main() {");
+    // TODO: implement runnable
     for child in main_method.children() {
-        let tag_name = child.tag_name().name();
-        let code_node = code_node::CodeNode::new(child);
-
-        if tag_name == "Println" {
+        let code_node = CodeNode::new(child);
+        // roxmltree gives us empty named nodes, so we need to filter them out.
+        if code_node.name == "" {
+            continue;
+        }
+        
+        #[cfg(debug_assertions)]
+        println!("{:?}", code_node.args);
+        
+        if code_node.name == "Println" {
             compiler.push_with_indent_str(&format!("println!(\"{}\");", code_node.main_arg.replace("\"", "\\\"")));
         }
     }
