@@ -5,7 +5,7 @@ use crate::compiler::Compiler;
 
 use roxmltree::Document;
 
-pub fn run(release: bool) {
+pub fn run(compile_only: bool, release: bool) {
     let config: Config = toml::from_str(&std::fs::read_to_string("Clade.toml").unwrap()).unwrap();
     let mut compiler = Compiler::new(release);
     
@@ -48,6 +48,8 @@ pub fn run(release: bool) {
     compiler.push_line_str("}");
     compiler.compile(&config);
     
-    let exe_path = util::current_dir().join("bin").join(format!("{}.exe", config.project.name));
-    std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap().wait().unwrap();
+    if !compile_only {
+        let exe_path = util::current_dir().join("bin").join(format!("{}.exe", config.project.name));
+        std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap().wait().unwrap();
+    }
 }

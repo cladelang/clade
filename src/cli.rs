@@ -12,6 +12,7 @@ struct Args {
 enum Action {
     New(NewAction),
     Start(StartAction),
+    Compile(CompileAction)
 }
 
 #[derive(Parser)]
@@ -21,6 +22,12 @@ struct NewAction {
 
 #[derive(Parser)]
 struct StartAction {
+    #[clap(long, short)]
+    release: bool,
+}
+
+#[derive(Parser)]
+struct CompileAction {
     #[clap(long, short)]
     release: bool,
 }
@@ -45,7 +52,15 @@ pub fn run() {
         },
         Action::Start(StartAction { release }) => {
             if util::in_project() {
-                parser::run(release);
+                parser::run(false, release);
+            } else {
+                println!("This action can only be ran in the root of a project folder.");
+                util::exit_ok();
+            }
+        },
+        Action::Compile(CompileAction { release }) => {
+            if util::in_project() {
+                parser::run(true, release);
             } else {
                 println!("This action can only be ran in the root of a project folder.");
                 util::exit_ok();
