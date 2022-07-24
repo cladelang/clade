@@ -39,14 +39,14 @@ impl Compiler {
         let main_dir = rustcode_path.parent().unwrap();
         
         let mut rustc = std::process::Command::new("rustc");
-        rustc.arg("--crate-type").arg("bin");
         rustc.arg("--out-dir").arg(main_dir.to_str().unwrap());
         if self.release {
+            rustc.arg("-O");
             rustc.arg("-Cdebuginfo=0");
             rustc.arg("-Copt-level=3");
             rustc.arg("-Clink-arg=/DEBUG:NONE");
         }
         rustc.arg(rustcode_path.to_str().unwrap());
-        rustc.spawn().unwrap();
+        rustc.spawn().unwrap().wait().unwrap();
     }
 }

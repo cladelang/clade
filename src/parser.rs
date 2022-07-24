@@ -26,5 +26,5 @@ pub fn run(release: bool) {
     compiler.compile(&config);
     
     let exe_path = util::current_dir().join("bin").join(format!("{}.exe", config.project.name));
-    std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap();
+    std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap().wait().unwrap();
 }
