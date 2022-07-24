@@ -2,6 +2,7 @@ use crate::config::Config;
 use crate::util;
 use crate::code_node::CodeNode;
 use crate::compiler::Compiler;
+
 use roxmltree::Document;
 
 pub fn run(release: bool) {
@@ -16,19 +17,32 @@ pub fn run(release: bool) {
         None => panic!("No Main method found"),
     };
     compiler.push_line_str("fn main() {");
-    // TODO: implement runnable
+    let mut code_nodes: Vec<CodeNode> = vec![];
+
     for child in main_method.children() {
         let code_node = CodeNode::new(child);
-        // roxmltree gives us empty named nodes, so we need to filter them out.
+        code_nodes.push(code_node);
+    }
+
+    for code_node in &code_nodes {
+        for arg in &code_node.args {
+            compiler.push_with_indent_str(&format!("let _{}_arg = \"{}\";", arg.0, util::escape_str(&arg.1)));
+        }
+    }
+
+    compiler.push_line_str("");
+
+    // TODO: implement runnable
+    for code_node in &code_nodes {
         if code_node.name == "" {
             continue;
         }
 
         #[cfg(debug_assertions)]
         println!("Arg: {:?}", code_node.args);
-        
+
         if code_node.name == "Println" {
-            compiler.push_with_indent_str(&format!("println!(\"{}\");", code_node.main_arg.replace("\"", "\\\"")));
+            compiler.push_with_indent_str(&format!("println!(\"{}\");", util::escape_str(&code_node.main_arg)));
         }
     }
     compiler.push_line_str("}");

@@ -37,3 +37,7 @@ pub fn in_project() -> bool {
 pub fn current_dir() -> PathBuf {
     std::env::current_dir().unwrap()
 }
+
+pub fn escape_str(s: &str) -> String {
+    s.replace("\"", "\\\"")
+}
