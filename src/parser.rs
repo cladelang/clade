@@ -46,6 +46,7 @@ pub fn run(compile_only: bool, release: bool) {
             compiler.push_with_indent_str(&format!("println!(\"{}\");", util::escape_str(&code_node.main_arg)));
         }
     }
+    
     compiler.push_line_str("}");
     let out_path = compiler.compile(&config);
     
