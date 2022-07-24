@@ -70,7 +70,7 @@ pub fn create_files(project: Project, project_path: &PathBuf) {
     write!(clade_toml, "entry_point = \"Main.xml\"").unwrap();
 
     let mut main_file = std::fs::File::create(&main_path).unwrap();
-    write!(main_file, "<Main>\n").unwrap();
-    write!(main_file, "    <Println>Hello, world!</Println>\n").unwrap();
+    writeln!(main_file, "<Main>").unwrap();
+    writeln!(main_file, "    <Println>Hello, world!</Println>").unwrap();
     write!(main_file, "</Main>").unwrap();
 }
