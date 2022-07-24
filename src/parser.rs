@@ -9,7 +9,7 @@ pub fn run(compile_only: bool, release: bool) {
     let config: Config = toml::from_str(&std::fs::read_to_string("Clade.toml").unwrap()).unwrap();
     let mut compiler = Compiler::new(release);
     
-    let input = std::fs::read_to_string(util::current_dir().join("src").join(&config.project.entry_point)).unwrap();
+    let input = std::fs::read_to_string(util::get_src_dir().join(&config.project.entry_point)).unwrap();
 
     let doc = Document::parse(&input).unwrap();
     let main_method = match doc.descendants().find(|e| e.tag_name().name() == "Main") {
@@ -49,7 +49,7 @@ pub fn run(compile_only: bool, release: bool) {
     compiler.compile(&config);
     
     if !compile_only {
-        let exe_path = util::current_dir().join("bin").join(format!("{}.exe", config.project.name));
+        let exe_path = util::get_bin_dir().join(format!("{}.exe", config.project.name));
         std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap().wait().unwrap();
     }
 }
