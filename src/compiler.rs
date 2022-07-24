@@ -1,5 +1,5 @@
 use crate::{config::Config, util};
-use std::io::Write;
+use std::{io::Write, path::PathBuf};
 
 pub struct Compiler {
     pub lines: Vec<String>,
@@ -26,7 +26,7 @@ impl Compiler {
         self.push_with_x_indent(line, 1);
     }
 
-    pub fn compile(&mut self, config: &Config) {
+    pub fn compile(&mut self, config: &Config) -> PathBuf {
         let bin_dir = util::get_bin_dir();
 
         let rustcode_path = if self.release {
@@ -46,16 +46,24 @@ impl Compiler {
         }
 
         let mut rustc = std::process::Command::new("rustc");
-        if self.release {
-            rustc.arg("--out-dir").arg(bin_dir.join("release").to_str().unwrap());
+
+        let out_dir = if self.release {
+            let out_dir = bin_dir.join("release");
+            rustc.arg("--out-dir").arg(out_dir.to_str().unwrap());
             rustc.arg("-O");
             rustc.arg("-Cdebuginfo=0");
             rustc.arg("-Copt-level=3");
             rustc.arg("-Clink-arg=/DEBUG:NONE");
+            out_dir
         } else {
-            rustc.arg("--out-dir").arg(bin_dir.join("debug").to_str().unwrap());
-        }
+            let out_dir = bin_dir.join("debug");
+            rustc.arg("--out-dir").arg(out_dir.to_str().unwrap());
+            out_dir
+        };
         rustc.arg(rustcode_path.to_str().unwrap());
+
         rustc.spawn().unwrap().wait().unwrap();
+
+        out_dir.clone()
     }
 }

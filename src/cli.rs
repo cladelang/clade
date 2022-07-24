@@ -1,4 +1,4 @@
-use std::{path::PathBuf, io::Write};
+use std::io::Write;
 use clap::{Parser, Subcommand};
 use crate::{util, project::Project, parser};
 

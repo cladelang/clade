@@ -4,6 +4,7 @@ use crate::code_node::CodeNode;
 use crate::compiler::Compiler;
 
 use roxmltree::Document;
+use std::process::Command;
 
 pub fn run(compile_only: bool, release: bool) {
     let config: Config = toml::from_str(&std::fs::read_to_string("Clade.toml").unwrap()).unwrap();
@@ -46,10 +47,10 @@ pub fn run(compile_only: bool, release: bool) {
         }
     }
     compiler.push_line_str("}");
-    compiler.compile(&config);
+    let out_path = compiler.compile(&config);
     
     if !compile_only {
-        let exe_path = util::get_bin_dir().join(format!("{}.exe", config.project.name));
-        std::process::Command::new(exe_path.to_str().unwrap()).spawn().unwrap().wait().unwrap();
+        let exe_path = out_path.join(format!("{}.exe", config.project.name));
+        util::run_and_wait(&mut Command::new(exe_path.to_str().unwrap()));
     }
 }

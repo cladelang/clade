@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::process::Command;
 
 pub fn try_create_folder(path: &PathBuf) {
     match std::fs::create_dir(path) {
@@ -60,4 +61,9 @@ pub fn get_bin_dir() -> PathBuf {
 
 pub fn get_clade_toml() -> PathBuf {
     current_dir().join("Clade.toml")
+}
+
+pub fn run_and_wait(command: &mut Command) {
+    let mut child = command.spawn().unwrap();
+    child.wait().unwrap();
 }
