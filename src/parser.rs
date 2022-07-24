@@ -23,9 +23,9 @@ pub fn run(release: bool) {
         if code_node.name == "" {
             continue;
         }
-        
+
         #[cfg(debug_assertions)]
-        println!("{:?}", code_node.args);
+        println!("Arg: {:?}", code_node.args);
         
         if code_node.name == "Println" {
             compiler.push_with_indent_str(&format!("println!(\"{}\");", code_node.main_arg.replace("\"", "\\\"")));
