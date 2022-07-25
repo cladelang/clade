@@ -1,5 +1,4 @@
-use std::path::PathBuf;
-use std::process::Command;
+use std::{path::PathBuf, process::Command};
 
 pub fn try_create_folder(path: &PathBuf) {
     match std::fs::create_dir(path) {
