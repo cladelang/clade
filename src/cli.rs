@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 use std::io::Write;
+=======
+use std::{io::Write, fs::create_dir, fs::File};
+>>>>>>> Stashed changes
 use clap::{Parser, Subcommand};
 use crate::{util, project::Project, parser};
 
@@ -37,7 +41,7 @@ pub fn run() {
     match args.action {
         Action::New(NewAction { project_name }) => {
             let project_path = util::current_dir().join(&project_name);
-            match std::fs::create_dir(&project_path) {
+            match create_dir(&project_path) {
                 Ok(x) => x,
                 Err(e) => {
                     if e.kind() == std::io::ErrorKind::AlreadyExists {
@@ -79,12 +83,12 @@ pub fn create_files(project: Project) {
     let clade_toml_path = util::get_clade_toml();
     util::try_create_file(&clade_toml_path);
 
-    let mut clade_toml = std::fs::File::create(&clade_toml_path).unwrap();
+    let mut clade_toml = File::create(&clade_toml_path).unwrap();
     writeln!(clade_toml, "[project]").unwrap();
     writeln!(clade_toml, "name = \"{}\"", project.name).unwrap();
     write!(clade_toml, "entry_point = \"Main.xml\"").unwrap();
 
-    let mut main_file = std::fs::File::create(&main_path).unwrap();
+    let mut main_file = File::create(&main_path).unwrap();
     writeln!(main_file, "<Main>").unwrap();
     writeln!(main_file, "    <Println>Hello, world!</Println>").unwrap();
     write!(main_file, "</Main>").unwrap();
