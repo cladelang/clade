@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-use std::io::Write;
-=======
 use std::{io::Write, fs::create_dir, fs::File};
->>>>>>> Stashed changes
 use clap::{Parser, Subcommand};
 use crate::{util, project::Project, parser};
 
