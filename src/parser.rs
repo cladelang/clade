@@ -17,9 +17,9 @@ pub fn run(compile_only: bool, release: bool) {
     };
 
     compiler.push_line_str("// Clade generated code");
-    compiler.push_line_str(&format!("// At: {}", util::get_clade_time()));
+    compiler.push_line_str(&format!("// At {}", util::get_clade_time()));
     compiler.push_line_str("");
-    
+
     compiler.push_line_str("#![allow(dead_code)]");
     compiler.push_line_str("");
 
