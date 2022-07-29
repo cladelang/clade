@@ -66,3 +66,9 @@ pub fn run_and_wait(command: &mut Command) {
     let mut child = command.spawn().unwrap();
     child.wait().unwrap();
 }
+
+pub fn get_clade_time() -> String {
+    let now = chrono::Utc::now();
+    let time = now.format("%Y-%m-%d %H:%M:%S").to_string();
+    time
+}

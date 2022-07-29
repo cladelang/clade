@@ -11,3 +11,5 @@ clap = { version = "*", features = ["derive"] }
 serde = { version = "*", features = ["derive"] }
 serde_derive = "*"
 toml = "*"
+rand = "*"
+chrono = "*"

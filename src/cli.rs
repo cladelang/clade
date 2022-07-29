@@ -34,6 +34,7 @@ struct CompileAction {
 
 pub fn run() {
     let args = Args::parse();
+
     match args.action {
         Action::New(NewAction { project_name }) => {
             let project_path = util::current_dir().join(&project_name);
