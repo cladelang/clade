@@ -14,6 +14,12 @@ impl Compiler {
         }
     }
 
+    pub fn push_empty_line(&mut self, x: usize) {
+        for _ in 0..x {
+            self.lines.push(String::new());
+        }
+    }
+
     pub fn push_line_str(&mut self, line: &str) {
         self.lines.push(line.to_string());
     }
