@@ -18,10 +18,11 @@ pub fn run(compile_only: bool, release: bool) {
 
     compiler.push_line_str("// Clade generated code");
     compiler.push_line_str(&format!("// At {}", util::get_clade_time()));
-    compiler.push_line_str("");
+    compiler.push_line_str("// The Clade project: https://github.com/cladelang/clade");
+    compiler.push_empty_line();
 
     compiler.push_line_str("#![allow(dead_code)]");
-    compiler.push_line_str("");
+    compiler.push_empty_line();
 
     // helper methods
     compiler.push_line_str("fn get_arg<'a>(args: &'a Vec<(u64, Vec<(&str, &str)>)>, addr: u64, name: &'a str) -> &'a str {");
@@ -30,19 +31,18 @@ pub fn run(compile_only: bool, release: bool) {
     compiler.push_with_x_indent("for (arg_name, arg_value) in &arg.1 {", 3);
     compiler.push_with_x_indent("if arg_name == &name {", 4);
     compiler.push_with_x_indent("return arg_value;", 5);
-    compiler.push_with_x_indent("}", 4);
-    compiler.push_with_x_indent("}", 3);
-    compiler.push_with_x_indent("}", 2);
-    compiler.push_with_x_indent("}", 1);
+    for x in (1..5).rev() {
+        compiler.push_with_x_indent("}", x);
+    }
     compiler.push_with_x_indent("panic!(\"Arg not found: {}\", name);", 1);
     compiler.push_line_str("}");
-    compiler.push_line_str("");
-    compiler.push_line_str("");
+    compiler.push_empty_line();
+    compiler.push_empty_line();
     // end helper methods
 
     compiler.push_line_str("fn main() {");
     compiler.push_with_indent_str("let mut args: Vec<(u64, Vec<(&str, &str)>)> = vec![];");
-    compiler.push_line_str("");
+    compiler.push_empty_line();
     let mut code_nodes: Vec<CodeNode> = vec![];
 
     let mut rng = rand::thread_rng();
@@ -73,7 +73,7 @@ pub fn run(compile_only: bool, release: bool) {
         compiler.push_with_indent_str("]));");
     }
 
-    compiler.push_line_str("");
+    compiler.push_empty_line();
 
     // TODO: implement runnable
     for code_node in &code_nodes {
