@@ -1,4 +1,4 @@
-use std::{path::PathBuf, io::Write};
+use std::{io::Write, fs::create_dir, fs::File};
 use clap::{Parser, Subcommand};
 use crate::{util, project::Project, parser};
 
@@ -34,10 +34,11 @@ struct CompileAction {
 
 pub fn run() {
     let args = Args::parse();
+
     match args.action {
         Action::New(NewAction { project_name }) => {
             let project_path = util::current_dir().join(&project_name);
-            match std::fs::create_dir(&project_path) {
+            match create_dir(&project_path) {
                 Ok(x) => x,
                 Err(e) => {
                     if e.kind() == std::io::ErrorKind::AlreadyExists {
@@ -48,7 +49,7 @@ pub fn run() {
                 }
             };
 
-            create_files(Project::new(project_name.to_string()), &project_path);
+            create_files(Project::new(project_name.to_string()));
         },
         Action::Start(StartAction { release }) => {
             if util::in_project() {
@@ -69,22 +70,22 @@ pub fn run() {
     }
 }
 
-pub fn create_files(project: Project, project_path: &PathBuf) {
-    let src_path = project_path.join("src");
+pub fn create_files(project: Project) {
+    let src_path = util::get_src_dir();
     util::try_create_folder(&src_path);
-    let main_path = project_path.join("src").join("Main.xml");
+    let main_path = util::get_src_dir().join("Main.xml");
     util::try_create_file(&main_path);
-    let bin_path = project_path.join("bin");
+    let bin_path = util::get_bin_dir();
     util::try_create_folder(&bin_path);
-    let clade_toml_path = project_path.join("Clade.toml");
+    let clade_toml_path = util::get_clade_toml();
     util::try_create_file(&clade_toml_path);
 
-    let mut clade_toml = std::fs::File::create(&clade_toml_path).unwrap();
+    let mut clade_toml = File::create(&clade_toml_path).unwrap();
     writeln!(clade_toml, "[project]").unwrap();
     writeln!(clade_toml, "name = \"{}\"", project.name).unwrap();
     write!(clade_toml, "entry_point = \"Main.xml\"").unwrap();
 
-    let mut main_file = std::fs::File::create(&main_path).unwrap();
+    let mut main_file = File::create(&main_path).unwrap();
     writeln!(main_file, "<Main>").unwrap();
     writeln!(main_file, "    <Println>Hello, world!</Println>").unwrap();
     write!(main_file, "</Main>").unwrap();

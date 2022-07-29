@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, process::Command};
 
 pub fn try_create_folder(path: &PathBuf) {
     match std::fs::create_dir(path) {
@@ -30,8 +30,10 @@ pub fn exit_ok() {
 }
 
 pub fn in_project() -> bool {
-    let clade_toml = current_dir().join("Clade.toml");
-    clade_toml.exists()
+    let clade_toml = get_clade_toml();
+    let bin_dir = get_bin_dir();
+    let src_dir = get_src_dir();
+    clade_toml.exists() && bin_dir.exists() && src_dir.exists()
 }
 
 pub fn current_dir() -> PathBuf {
@@ -40,4 +42,33 @@ pub fn current_dir() -> PathBuf {
 
 pub fn escape_str(s: &str) -> String {
     s.replace("\"", "\\\"")
+}
+
+pub fn create_dir_if_not_exists(path: &PathBuf) {
+    if !path.exists() {
+        std::fs::create_dir(path).unwrap();
+    }
+}
+
+pub fn get_src_dir() -> PathBuf {
+    current_dir().join("src")
+}
+
+pub fn get_bin_dir() -> PathBuf {
+    current_dir().join("bin")
+}
+
+pub fn get_clade_toml() -> PathBuf {
+    current_dir().join("Clade.toml")
+}
+
+pub fn run_and_wait(command: &mut Command) {
+    let mut child = command.spawn().unwrap();
+    child.wait().unwrap();
+}
+
+pub fn get_clade_time() -> String {
+    let now = chrono::Utc::now();
+    let time = now.format("%Y-%m-%d %H:%M:%S").to_string();
+    time
 }
