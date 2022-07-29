@@ -20,7 +20,8 @@ pub fn run(compile_only: bool, release: bool) {
     compiler.push_line_str(&format!("// At {}", util::get_clade_time()));
     compiler.push_line_str("// The Clade project: https://github.com/cladelang/clade");
     compiler.push_empty_line();
-
+    compiler.push_empty_line();
+    compiler.push_line_str("// Dead code might be generated depending on the Clade code.");
     compiler.push_line_str("#![allow(dead_code)]");
     compiler.push_empty_line();
 
