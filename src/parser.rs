@@ -65,7 +65,7 @@ pub fn run(compile_only: bool, release: bool) {
     for code_node in &code_nodes {
         let mut args: Vec<(String, String)> = vec![];
         for arg in &code_node.args {
-            args.push((arg.0.clone(), arg.1.clone()));
+            args.push((arg.name.clone(), arg.value.clone()));
         }
         compiler.push_with_indent_str(&format!("args.push(({}, vec![", code_node.addr));
         for arg in &args {

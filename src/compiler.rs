@@ -1,5 +1,5 @@
 use crate::{config::Config, util};
-use std::{io::Write, path::PathBuf};
+use std::{io::Write, path::PathBuf, fs};
 
 pub struct Compiler {
     pub lines: Vec<String>,
@@ -34,14 +34,9 @@ impl Compiler {
 
     pub fn compile(&mut self, config: &Config) -> PathBuf {
         let bin_dir = util::get_bin_dir(config.project.name.to_string());
-
-        let rustcode_path = if self.release {
-            util::create_dir_if_not_exists(&bin_dir.join("release"));
-            bin_dir.join("release").join(format!("{}.rs", config.project.name))
-        } else {
-            util::create_dir_if_not_exists(&bin_dir.join("debug"));
-            bin_dir.join("debug").join(format!("{}.rs", config.project.name))
-        };
+        
+        let rustcode_path = util::get_cargo_dir(config.project.name.to_string())
+            .join("src").join("main.rs");
 
         let mut rustcode_file = std::fs::File::create(&rustcode_path).unwrap();
         for line in self.lines.iter() {
@@ -51,24 +46,23 @@ impl Compiler {
             }
         }
 
-        let mut rustc = std::process::Command::new("rustc");
+        let mut cargo = std::process::Command::new("cargo");
 
         let out_dir = if self.release {
             let out_dir = bin_dir.join("release");
-            rustc.arg("--out-dir").arg(out_dir.to_str().unwrap());
-            rustc.arg("-O");
-            rustc.arg("-Cdebuginfo=0");
-            rustc.arg("-Copt-level=3");
-            rustc.arg("-Clink-arg=/DEBUG:NONE");
+            util::create_dir_if_not_exists(&out_dir);
+            cargo.current_dir(format!("{}/{}", util::current_dir().display(), "cargo")).arg("build").arg("--release");
+            cargo.spawn().unwrap().wait().unwrap();
+            fs::copy(util::current_dir().join("cargo").join("target").join("release").join("cargo"), util::current_dir().join("bin").join("release").join(&config.project.name)).unwrap();
             out_dir
         } else {
             let out_dir = bin_dir.join("debug");
-            rustc.arg("--out-dir").arg(out_dir.to_str().unwrap());
+            util::create_dir_if_not_exists(&bin_dir.join("debug"));
+            cargo.current_dir(format!("{}/{}", util::current_dir().display(), "cargo")).arg("build");
+            cargo.spawn().unwrap().wait().unwrap();
+            fs::copy(util::current_dir().join("cargo").join("target").join("debug").join("cargo"), util::current_dir().join("bin").join("debug").join(&config.project.name)).unwrap();
             out_dir
         };
-        rustc.arg(rustcode_path.to_str().unwrap());
-
-        rustc.spawn().unwrap().wait().unwrap();
 
         out_dir.clone()
     }

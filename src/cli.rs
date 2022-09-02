@@ -1,4 +1,4 @@
-use std::{io::Write, fs::create_dir, fs::File};
+use std::{io::Write, fs::create_dir, fs::File, process::Command};
 use clap::{Parser, Subcommand};
 use crate::{util, project::Project, parser};
 
@@ -81,8 +81,12 @@ pub fn create_files(project: Project) {
     util::try_create_folder(&bin_path);
     let clade_toml_path = util::get_clade_toml(project_name.to_string());
     util::try_create_file(&clade_toml_path);
-    let cargo_path = util::get_cargo_dir(project_name.to_string());
-    util::try_create_folder(&cargo_path);
+    
+    // creates a new 'cargo' package without git stuff
+    util::run_and_wait(&mut Command::new("cargo")
+        .arg("new").arg("cargo").arg("--bin").arg("--vcs").arg("none")
+        .current_dir(format!("{}/{}", util::current_dir().display(), project_name))
+    );
 
     let mut clade_toml = File::create(&clade_toml_path).unwrap();
     writeln!(clade_toml, "[project]").unwrap();
