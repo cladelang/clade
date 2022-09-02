@@ -7,8 +7,9 @@ use rand::Rng;
 pub fn run(compile_only: bool, release: bool) {
     let config: Config = toml::from_str(&std::fs::read_to_string("Clade.toml").unwrap()).unwrap();
     let mut compiler = Compiler::new(release);
-    
-    let input = std::fs::read_to_string(util::get_src_dir().join(&config.project.entry_point)).unwrap();
+    let project_name = &config.project.name;
+
+    let input = std::fs::read_to_string(util::get_src_dir(project_name.to_string()).join(&config.project.entry_point)).unwrap();
 
     let doc = Document::parse(&input).unwrap();
     let main_method = match doc.descendants().find(|e| e.tag_name().name() == "Main") {
@@ -95,7 +96,7 @@ pub fn run(compile_only: bool, release: bool) {
     let out_path = compiler.compile(&config);
     
     if !compile_only {
-        let exe_path = out_path.join(format!("{}.exe", config.project.name));
+        let exe_path = out_path.join(format!("{}{}", project_name, util::get_ext()));
         util::run_and_wait(&mut Command::new(exe_path.to_str().unwrap()));
     }
 }

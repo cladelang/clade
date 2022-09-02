@@ -71,18 +71,22 @@ pub fn run() {
 }
 
 pub fn create_files(project: Project) {
-    let src_path = util::get_src_dir();
+    let project_name = &project.name;
+
+    let src_path = util::get_src_dir(project_name.to_string());
     util::try_create_folder(&src_path);
-    let main_path = util::get_src_dir().join("Main.xml");
+    let main_path = util::get_src_dir(project_name.to_string()).join("Main.xml");
     util::try_create_file(&main_path);
-    let bin_path = util::get_bin_dir();
+    let bin_path = util::get_bin_dir(project_name.to_string());
     util::try_create_folder(&bin_path);
-    let clade_toml_path = util::get_clade_toml();
+    let clade_toml_path = util::get_clade_toml(project_name.to_string());
     util::try_create_file(&clade_toml_path);
+    let cargo_path = util::get_cargo_dir(project_name.to_string());
+    util::try_create_folder(&cargo_path);
 
     let mut clade_toml = File::create(&clade_toml_path).unwrap();
     writeln!(clade_toml, "[project]").unwrap();
-    writeln!(clade_toml, "name = \"{}\"", project.name).unwrap();
+    writeln!(clade_toml, "name = \"{}\"", project_name.to_string()).unwrap();
     write!(clade_toml, "entry_point = \"Main.xml\"").unwrap();
 
     let mut main_file = File::create(&main_path).unwrap();

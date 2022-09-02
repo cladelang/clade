@@ -33,7 +33,7 @@ impl Compiler {
     }
 
     pub fn compile(&mut self, config: &Config) -> PathBuf {
-        let bin_dir = util::get_bin_dir();
+        let bin_dir = util::get_bin_dir(config.project.name.to_string());
 
         let rustcode_path = if self.release {
             util::create_dir_if_not_exists(&bin_dir.join("release"));
